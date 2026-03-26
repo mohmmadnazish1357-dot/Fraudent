@@ -1,0 +1,5 @@
+{
+  "name": "Fraudent",
+  "description": "An AI-powered social fraud detection tool that audits profiles, analyzes content for AI-generated images, and detects imposter accounts using Gemini AI.",
+  "requestFramePermissions": []
+}

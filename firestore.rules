@@ -1,0 +1,84 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {uid}
+    // Fields:
+    //   - uid: string (required)
+    //   - name: string (required)
+    //   - email: string (required)
+    //   - photo: string (optional)
+    //   - createdAt: string (required)
+    //
+    // Collection: audits
+    // Document ID: {auditId}
+    // Fields:
+    //   - id: string (required)
+    //   - uid: string (required)
+    //   - type: string (required, enum: profile, content, duel)
+    //   - input: string (required)
+    //   - score: number (required)
+    //   - evidence: list (required)
+    //   - details: map (required)
+    //   - timestamp: string (required)
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll(['uid', 'name', 'email', 'createdAt']) &&
+             data.uid is string && data.uid.size() > 0 &&
+             data.name is string && data.name.size() > 0 && data.name.size() < 100 &&
+             data.email is string && data.email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$") &&
+             data.createdAt is string;
+    }
+
+    function isValidAudit(data) {
+      return data.keys().hasAll(['id', 'uid', 'type', 'input', 'score', 'evidence', 'details', 'timestamp']) &&
+             data.id is string &&
+             data.uid == request.auth.uid &&
+             data.type in ['profile', 'content', 'duel'] &&
+             data.input is string && data.input.size() < 1000 &&
+             data.score is number && data.score >= 0 && data.score <= 100 &&
+             data.evidence is list && data.evidence.size() < 50 &&
+             data.details is map &&
+             data.timestamp is string;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && isValidUser(request.resource.data);
+      allow update: if isOwner(uid) && isValidUser(request.resource.data) && 
+                      request.resource.data.uid == resource.data.uid;
+    }
+
+    match /audits/{auditId} {
+      allow read: if isAuthenticated() && (resource == null || resource.data.uid == request.auth.uid);
+      allow create: if isAuthenticated() && isValidAudit(request.resource.data);
+      allow update, delete: if isDocOwner();
+    }
+  }
+}

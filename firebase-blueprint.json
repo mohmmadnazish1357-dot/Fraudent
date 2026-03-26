@@ -1,0 +1,43 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Stores user profile information synced from authentication.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "The unique identifier for the user." },
+        "name": { "type": "string", "description": "The display name of the user." },
+        "email": { "type": "string", "description": "The email address of the user." },
+        "photo": { "type": "string", "description": "The profile photo URL." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When the profile was created." }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "AuditResult": {
+      "title": "Audit Result",
+      "description": "Stores the results of a forensic audit.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "Unique audit ID." },
+        "uid": { "type": "string", "description": "The ID of the user who performed the audit." },
+        "type": { "type": "string", "enum": ["profile", "content", "duel"], "description": "The type of audit performed." },
+        "input": { "type": "string", "description": "The input analyzed (username or image URL)." },
+        "score": { "type": "number", "description": "The calculated trust score (0-100)." },
+        "evidence": { "type": "array", "items": { "type": "string" }, "description": "List of forensic evidence found." },
+        "details": { "type": "object", "description": "Technical details of the audit." },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the audit was performed." }
+      },
+      "required": ["id", "uid", "type", "input", "score", "timestamp"]
+    }
+  },
+  "firestore": {
+    "/users/{uid}": {
+      "schema": "UserProfile",
+      "description": "User profile documents."
+    },
+    "/audits/{auditId}": {
+      "schema": "AuditResult",
+      "description": "Forensic audit results."
+    }
+  }
+}
