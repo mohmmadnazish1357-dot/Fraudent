@@ -6,7 +6,7 @@
 
 This contains everything you need to run your app locally.
 
-View your app in AI Studio: https://ai.studio/apps/182962a4-549e-4c45-8e15-48cb4e77b671
+View your app in :https://fraudent.vercel.app/
 
 ## Run Locally
 
