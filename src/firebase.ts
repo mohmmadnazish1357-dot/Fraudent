@@ -1,10 +1,12 @@
 import { initializeApp } from 'firebase/app';
 import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, onSnapshot, getDocFromServer } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'firebase/auth';
 import firebaseConfig from '../firebase-applet-config.json';
 
 // Initialize Firebase SDK
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+export const auth = getAuth(app);
 
 // Connection test
 async function testConnection() {
@@ -18,4 +20,7 @@ async function testConnection() {
 }
 testConnection();
 
-export { doc, setDoc, getDoc, collection, query, where, getDocs, onSnapshot };
+export { 
+  doc, setDoc, getDoc, collection, query, where, getDocs, onSnapshot,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut
+};

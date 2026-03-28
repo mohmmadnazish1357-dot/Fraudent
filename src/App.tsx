@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useNavigate, Navigate, useLocation, useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Shield, 
@@ -23,9 +23,27 @@ import {
   Lock,
   AlertCircle
 } from 'lucide-react';
+import { 
+  ClerkProvider, 
+  SignIn, 
+  SignUp, 
+  UserButton, 
+  useUser, 
+  useAuth, 
+  SignedIn, 
+  SignedOut 
+} from '@clerk/clerk-react';
 import { analyzeProfile, analyzeContent, analyzeDuel, AuditResult, generateBackgroundImage } from './services/aiService';
-import { db, doc, setDoc, getDoc, collection, query, where, getDocs, onSnapshot } from './firebase';
-import { supabase } from './supabaseClient';
+import { 
+  db, doc, setDoc, getDoc, collection, query, where, getDocs, onSnapshot
+} from './firebase';
+
+// Clerk Publishable Key
+const CLERK_PUBLISHABLE_KEY = (import.meta as any).env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!CLERK_PUBLISHABLE_KEY) {
+  throw new Error("Missing Clerk Publishable Key. Please add VITE_CLERK_PUBLISHABLE_KEY to your .env file.");
+}
 
 // --- Types ---
 interface User {
@@ -69,7 +87,7 @@ const AmbientBackground = ({ imageUrl }: { imageUrl?: string }) => (
   </>
 );
 
-const Navbar = ({ user, onLogout }: { user: User | null, onLogout: () => void }) => {
+const Navbar = () => {
   const navigate = useNavigate();
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center glass border-b-0 rounded-b-2xl mx-4 mt-4">
@@ -82,20 +100,11 @@ const Navbar = ({ user, onLogout }: { user: User | null, onLogout: () => void })
           Fraudent
         </span>
       </div>
-      {user && (
+      <SignedIn>
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-cream/40 border border-black/10">
-            <img src={user.photo} alt={user.name} className="w-6 h-6 rounded-full" referrerPolicy="no-referrer" />
-            <span className="text-sm font-medium text-black">{user.name}</span>
-          </div>
-          <button 
-            onClick={onLogout}
-            className="p-2 rounded-full hover:bg-cream/40 transition-colors text-black/60 hover:text-black"
-          >
-            <LogOut size={20} />
-          </button>
+          <UserButton afterSignOutUrl="/login" />
         </div>
-      )}
+      </SignedIn>
     </nav>
   );
 };
@@ -103,217 +112,97 @@ const Navbar = ({ user, onLogout }: { user: User | null, onLogout: () => void })
 // --- Pages ---
 
 const LoginPage = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [isSignUp, setIsSignUp] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-
-  const handleGoogleLogin = async () => {
-    setIsGoogleLoading(true);
-    setError(null);
-    try {
-      const { error: googleError } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: window.location.origin
-        }
-      });
-      if (googleError) throw googleError;
-    } catch (err: any) {
-      console.error(err);
-      setError(err.message || "Google login failed.");
-      setIsGoogleLoading(false);
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError(null);
-    setSuccessMessage(null);
-
-    try {
-      if (isSignUp) {
-        const { data, error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-        });
-        if (signUpError) throw signUpError;
-        if (data.user) {
-          // Check if email confirmation is required
-          if (data.session) {
-            navigate('/');
-          } else {
-            setSuccessMessage("Your account has been created. Please check your email and verify your address before logging in.");
-            setIsSignUp(false);
-            // Email is already in state, so it's pre-filled
-          }
-        }
-      } else {
-        const { data, error: signInError } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (signInError) throw signInError;
-        if (data.session) {
-          navigate('/');
-        } else {
-          // This case might happen if email is not confirmed but signInWithPassword doesn't throw
-          // Usually it throws "Email not confirmed"
-          setError("Please confirm your email address before signing in.");
-        }
-      }
-    } catch (err: any) {
-      console.error(err);
-      let msg = err.message || "Authentication failed. Please check your credentials.";
-      
-      if (msg.includes("Invalid login credentials")) {
-        msg = "Invalid email or password. If you don't have an account, please switch to 'Create Account' mode.";
-      } else if (msg.includes("Email not confirmed")) {
-        msg = "Please confirm your email address before signing in. Check your inbox for a confirmation link.";
-      }
-      
-      setError(msg);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-cream">
       <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full glass p-10 rounded-[2.5rem] text-center relative overflow-hidden"
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-md w-full text-center relative"
       >
-        <div className="absolute -top-24 -left-24 w-48 h-48 bg-black/5 rounded-full blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 w-48 h-48 bg-cream/40 rounded-full blur-3xl" />
-        
-        <Shield className="w-20 h-20 text-black mx-auto mb-6 drop-shadow-[0_0_15px_rgba(0,0,0,0.1)]" />
-        <h1 className="text-4xl font-display font-bold mb-4 text-black">Fraudent</h1>
-        <p className="text-black/60 mb-10 leading-relaxed">
-          The ultimate social fraud detection engine. Protect your digital presence with AI-powered forensics.
-        </p>
-
-        {successMessage && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="mb-6 p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-green-600 text-xs font-bold flex items-center gap-2"
-          >
-            <CheckCircle size={14} />
-            {successMessage}
-          </motion.div>
-        )}
-
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="mb-6 p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 text-xs font-bold flex items-center gap-2"
-          >
-            <AlertTriangle size={14} />
-            {error}
-          </motion.div>
-        )}
-        
-        <form onSubmit={handleLogin} className="space-y-4 text-left">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-black/40 uppercase tracking-widest ml-1">Account / Email</label>
-            <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={18} />
-              <input 
-                type="email" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="w-full py-4 pl-12 pr-4 rounded-2xl bg-cream/30 border border-black/5 focus:border-black/20 focus:outline-none transition-all text-black"
-                required
-              />
-            </div>
+        <div className="mb-10">
+          <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/20">
+            <Shield className="text-white w-10 h-10" />
           </div>
-          
-          <div className="space-y-2">
-            <div className="flex items-center justify-between ml-1">
-              <label className="text-xs font-bold text-black/40 uppercase tracking-widest">Password</label>
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={18} />
-              <input 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full py-4 pl-12 pr-4 rounded-2xl bg-cream/30 border border-black/5 focus:border-black/20 focus:outline-none transition-all text-black"
-                required
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading || isGoogleLoading}
-            className="w-full mt-4 py-4 px-6 rounded-2xl bg-black text-white font-bold text-lg shadow-lg shadow-black/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-70"
-          >
-            {isLoading ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              isSignUp ? "Create Account" : "Sign In"
-            )}
-          </button>
-          <div className="text-center mt-4">
-            <button 
-              type="button"
-              onClick={() => {
-                setIsSignUp(!isSignUp);
-                setError(null);
-                setSuccessMessage(null);
-              }}
-              className="text-[10px] text-black/40 hover:text-black font-bold uppercase tracking-widest transition-colors"
-            >
-              {isSignUp ? "Already have an account? Sign In" : "New here? Create an account"}
-            </button>
-          </div>
-        </form>
-
-        <div className="mt-8 flex items-center justify-center gap-4">
-          <div className="h-px flex-1 bg-black/5" />
-          <span className="text-[10px] font-bold text-black/20 uppercase tracking-widest">Or continue with</span>
-          <div className="h-px flex-1 bg-black/5" />
+          <h1 className="text-4xl font-display font-bold text-black tracking-tight mb-2">Fraudent</h1>
+          <p className="text-black/40 text-sm font-medium uppercase tracking-[0.2em]">Forensic Analysis Portal</p>
         </div>
 
-        <button
-          onClick={handleGoogleLogin}
-          disabled={isLoading || isGoogleLoading}
-          className="w-full mt-6 py-3 px-6 rounded-2xl border border-black/5 hover:bg-black/5 transition-all flex items-center justify-center gap-3 text-sm font-bold text-black/60 disabled:opacity-70"
-        >
-          {isGoogleLoading ? (
-            <Loader2 className="animate-spin w-4 h-4" />
-          ) : (
-            <img src="https://www.google.com/favicon.ico" className="w-4 h-4 grayscale opacity-60" alt="Google" />
-          )}
-          {isGoogleLoading ? "Verifying Account..." : "Google Account"}
-        </button>
+        <div className="flex justify-center">
+          <SignIn 
+            routing="path" 
+            path="/login" 
+            signUpUrl="/signup"
+            appearance={{
+              elements: {
+                rootBox: "w-full",
+                card: "glass rounded-[2rem] border-black/5 shadow-2xl p-8",
+                headerTitle: "text-black font-display font-bold",
+                headerSubtitle: "text-black/40",
+                socialButtonsBlockButton: "rounded-xl border-black/5 hover:bg-black/5",
+                formButtonPrimary: "bg-black hover:bg-black/80 rounded-xl py-3",
+                footerActionLink: "text-black hover:text-black/60 font-bold"
+              }
+            }}
+          />
+        </div>
+      </motion.div>
+      
+      <p className="mt-8 text-[10px] text-black/20 font-bold uppercase tracking-[0.3em]">
+        End-to-End Encrypted • AI-Powered Forensics
+      </p>
+    </div>
+  );
+};
 
-        <p className="mt-8 text-[10px] text-black/20 uppercase tracking-widest">Secure • AI-Powered • Real-time</p>
+const SignUpPage = () => {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-cream">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="max-w-md w-full text-center relative"
+      >
+        <div className="mb-10">
+          <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/20">
+            <Shield className="text-white w-10 h-10" />
+          </div>
+          <h1 className="text-4xl font-display font-bold text-black tracking-tight mb-2">Fraudent</h1>
+          <p className="text-black/40 text-sm font-medium uppercase tracking-[0.2em]">Forensic Analysis Portal</p>
+        </div>
+
+        <div className="flex justify-center">
+          <SignUp 
+            routing="path" 
+            path="/signup" 
+            signInUrl="/login"
+            appearance={{
+              elements: {
+                rootBox: "w-full",
+                card: "glass rounded-[2rem] border-black/5 shadow-2xl p-8",
+                headerTitle: "text-black font-display font-bold",
+                headerSubtitle: "text-black/40",
+                socialButtonsBlockButton: "rounded-xl border-black/5 hover:bg-black/5",
+                formButtonPrimary: "bg-black hover:bg-black/80 rounded-xl py-3",
+                footerActionLink: "text-black hover:text-black/60 font-bold"
+              }
+            }}
+          />
+        </div>
       </motion.div>
     </div>
   );
 };
 
-const Dashboard = ({ user }: { user: User }) => {
+const Dashboard = () => {
   const navigate = useNavigate();
+  const { user } = useUser();
   const [history, setHistory] = useState<AuditResult[]>([]);
 
   useEffect(() => {
     if (!user) return;
 
     // Fetch history from Firestore
-    const q = query(collection(db, 'audits'), where('uid', '==', user.uid));
+    const q = query(collection(db, 'audits'), where('uid', '==', user.id));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const audits = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as AuditResult));
       // Sort by timestamp descending
@@ -520,9 +409,10 @@ const AuditInputPage = ({ type }: { type: 'profile' | 'content' | 'duel' }) => {
   );
 };
 
-const ProcessingPage = ({ user }: { user: User }) => {
+const ProcessingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useUser();
   const { type, input1, input2 } = location.state || {};
   const [status, setStatus] = useState('Initializing forensic engine...');
   const [progress, setProgress] = useState(0);
@@ -564,7 +454,7 @@ const ProcessingPage = ({ user }: { user: User }) => {
         // Save to Firestore
         const auditData = {
           ...result,
-          uid: user.uid,
+          uid: user.id,
           timestamp: new Date().toISOString()
         };
 
@@ -775,116 +665,68 @@ const ResultsPage = () => {
 };
 
 export default function App() {
-  const [user, setUser] = useState<User | null>(null);
-  const [isReady, setIsReady] = useState(false);
   const [bgImage, setBgImage] = useState<string>('');
-  const [appError, setAppError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const sbUser = session.user;
-        
-        // Sync user to Firestore
-        const userDataToSync = {
-          uid: sbUser.id,
-          name: sbUser.user_metadata?.full_name || sbUser.email?.split('@')[0] || 'Detective',
-          email: sbUser.email || '',
-          photo: sbUser.user_metadata?.avatar_url || `https://picsum.photos/seed/${sbUser.id}/100/100`,
-          createdAt: sbUser.created_at || new Date().toISOString()
-        };
-
-        try {
-          // Save/Update in Firestore
-          await setDoc(doc(db, 'users', sbUser.id), userDataToSync, { merge: true });
-
-          // Fetch from Firestore to ensure we have the latest
-          const userDoc = await getDoc(doc(db, 'users', sbUser.id));
-          if (userDoc.exists()) {
-            setUser(userDoc.data() as User);
-          } else {
-            setUser(userDataToSync);
-          }
-        } catch (err) {
-          console.error("Failed to sync user to Firestore:", err);
-          setUser(userDataToSync);
-        }
-      } else {
-        setUser(null);
-      }
-      setIsReady(true);
-    });
-
     // Fetch AI Background
     const fetchBg = async () => {
       const img = await generateBackgroundImage("minimalist cream and black cybersecurity forensic analysis digital footprint");
       setBgImage(img);
     };
     fetchBg();
-
-    return () => subscription.unsubscribe();
   }, []);
 
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  if (!isReady) return (
-    <div className="min-h-screen bg-cream flex items-center justify-center">
-      <Loader2 className="animate-spin text-black" size={40} />
-    </div>
-  );
-
-  if (appError) return <ErrorBoundary error={appError} reset={() => window.location.reload()} />;
-
-  try {
-    return (
+  return (
+    <ClerkProvider publishableKey={CLERK_PUBLISHABLE_KEY}>
       <Router>
-        <div className="min-h-screen relative">
+        <div className="min-h-screen bg-cream font-sans text-black selection:bg-black selection:text-white overflow-x-hidden">
           <AmbientBackground imageUrl={bgImage} />
-          <Navbar user={user} onLogout={handleLogout} />
+          <Navbar />
           
-          <AnimatePresence mode="wait">
-            <Routes>
-              <Route 
-                path="/login" 
-                element={!user ? <LoginPage /> : <Navigate to="/" />} 
-              />
-              <Route 
-                path="/" 
-                element={user ? <Dashboard user={user} /> : <Navigate to="/login" />} 
-              />
-              <Route 
-                path="/audit/profile" 
-                element={user ? <AuditInputPage type="profile" /> : <Navigate to="/login" />} 
-              />
-              <Route 
-                path="/audit/content" 
-                element={user ? <AuditInputPage type="content" /> : <Navigate to="/login" />} 
-              />
-              <Route 
-                path="/audit/duel" 
-                element={user ? <AuditInputPage type="duel" /> : <Navigate to="/login" />} 
-              />
-              <Route 
-                path="/processing" 
-                element={user ? <ProcessingPage user={user} /> : <Navigate to="/login" />} 
-              />
-              <Route 
-                path="/results/:id" 
-                element={user ? <ResultsPage /> : <Navigate to="/login" />} 
-              />
-            </Routes>
-          </AnimatePresence>
+          <Routes>
+            <Route path="/login/*" element={<LoginPage />} />
+            <Route path="/signup/*" element={<SignUpPage />} />
+            
+            <Route path="/" element={
+              <SignedIn>
+                <Dashboard />
+              </SignedIn>
+            } />
+            
+            <Route path="/audit/:type" element={
+              <SignedIn>
+                <AuditInputWrapper />
+              </SignedIn>
+            } />
+            
+            <Route path="/processing" element={
+              <SignedIn>
+                <ProcessingPage />
+              </SignedIn>
+            } />
+            
+            <Route path="/results/:id" element={
+              <SignedIn>
+                <ResultsPage />
+              </SignedIn>
+            } />
+
+            <Route path="*" element={
+              <SignedOut>
+                <Navigate to="/login" replace />
+              </SignedOut>
+            } />
+          </Routes>
         </div>
       </Router>
-    );
-  } catch (err: any) {
-    setAppError(err);
-    return null;
-  }
+    </ClerkProvider>
+  );
 }
+
+const AuditInputWrapper = () => {
+  const { type } = useParams<{ type: string }>();
+  if (type !== 'profile' && type !== 'content' && type !== 'duel') {
+    return <Navigate to="/" />;
+  }
+  return <AuditInputPage type={type} />;
+};
