@@ -4,11 +4,11 @@ import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "motion/react";
 import { Scan, Shield } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { analyzeProfile, analyzeContent, analyzeDuel, AuditResult } from "@/src/services/aiService";
 import { db, doc, setDoc } from "@/src/firebase";
 
-export default function ProcessingPage() {
+function ProcessingContent() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -119,5 +119,17 @@ export default function ProcessingPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ProcessingPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-cream flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-black/10 border-t-black rounded-full animate-spin" />
+      </div>
+    }>
+      <ProcessingContent />
+    </Suspense>
   );
 }

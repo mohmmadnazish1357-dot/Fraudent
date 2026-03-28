@@ -12,8 +12,6 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@clerk/clerk-react": "^5.61.4",
-    "@clerk/clerk-sdk-node": "^4.13.23",
     "@google/genai": "^1.29.0",
     "@tailwindcss/vite": "^4.1.14",
     "@vitejs/plugin-react": "^5.0.4",
