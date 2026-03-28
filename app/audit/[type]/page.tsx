@@ -39,33 +39,34 @@ export default function AuditInputPage() {
       title: 'Profile Audit',
       placeholder: 'Enter username (e.g., @john_doe)',
       icon: UserCheck,
-      color: 'text-black'
+      color: 'text-white'
     },
     content: {
       title: 'Content Forensic',
       placeholder: 'Paste image URL or post link',
       icon: ImageIcon,
-      color: 'text-black'
+      color: 'text-white'
     },
     duel: {
       title: 'Profile Duel',
       placeholder: 'First username',
       icon: Users,
-      color: 'text-black'
+      color: 'text-white'
     }
   }[type] || {
     title: 'Unknown Audit',
     placeholder: '',
     icon: Shield,
-    color: 'text-black'
+    color: 'text-white'
   };
 
   return (
-    <div className="min-h-screen bg-cream pt-32 px-6 flex flex-col items-center">
+    <div className="min-h-screen bg-[#0A0A0A] pt-32 px-6 flex flex-col items-center">
+      <div className="bg-image-overlay" />
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center glass border-b-0 rounded-b-2xl mx-4 mt-4">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
-          <Shield className="text-black w-8 h-8" />
-          <span className="text-xl font-display font-bold text-black">Fraudent</span>
+          <Shield className="text-white w-8 h-8" />
+          <span className="text-xl font-display font-bold text-white">Fraudent</span>
         </div>
       </nav>
 
@@ -75,25 +76,25 @@ export default function AuditInputPage() {
         className="max-w-2xl w-full glass p-10 rounded-[2.5rem]"
       >
         <div className="flex items-center gap-4 mb-8">
-          <div className={`p-3 rounded-2xl bg-cream/10 ${config.color}`}>
+          <div className={`p-3 rounded-2xl bg-white/5 ${config.color}`}>
             <config.icon size={32} />
           </div>
-          <h2 className="text-3xl font-display font-bold">{config.title}</h2>
+          <h2 className="text-3xl font-display font-bold text-white">{config.title}</h2>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-black/40 mb-2 uppercase tracking-wider">
+            <label className="block text-sm font-medium text-white/20 mb-2 uppercase tracking-wider">
               {type === 'duel' ? 'Account A' : 'Investigation Target'}
             </label>
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={20} />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={20} />
               <input
                 type="text"
                 value={input1}
                 onChange={(e) => setInput1(e.target.value)}
                 placeholder={config.placeholder}
-                className="w-full bg-cream/30 border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-black/20 transition-all text-black font-medium"
+                className="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-white/20 transition-all text-white font-medium placeholder:text-white/10"
                 required
               />
             </div>
@@ -101,15 +102,15 @@ export default function AuditInputPage() {
 
           {type === 'duel' && (
             <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-              <label className="block text-sm font-medium text-black/40 mb-2 uppercase tracking-wider">Account B</label>
+              <label className="block text-sm font-medium text-white/20 mb-2 uppercase tracking-wider">Account B</label>
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black/30" size={20} />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-white/20" size={20} />
                 <input
                   type="text"
                   value={input2}
                   onChange={(e) => setInput2(e.target.value)}
                   placeholder="Second username"
-                  className="w-full bg-cream/30 border border-black/5 rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-black/20 transition-all text-black font-medium"
+                  className="w-full bg-white/[0.03] border border-white/[0.08] rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-white/20 transition-all text-white font-medium placeholder:text-white/10"
                   required
                 />
               </div>
@@ -118,7 +119,7 @@ export default function AuditInputPage() {
 
           <button
             type="submit"
-            className="w-full py-4 rounded-2xl bg-black text-white font-bold text-lg shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all"
+            className="w-full py-4 rounded-2xl bg-white text-black font-bold text-lg shadow-lg hover:scale-[1.01] active:scale-[0.99] transition-all"
           >
             Initialize Analysis
           </button>

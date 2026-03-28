@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-cream text-black`}>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans bg-[#0A0A0A] text-white`}>
         <AuthProvider>
           {children}
         </AuthProvider>

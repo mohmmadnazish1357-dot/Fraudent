@@ -82,11 +82,12 @@ function ProcessingContent() {
   if (status === "loading") return null;
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen bg-[#0A0A0A] flex flex-col items-center justify-center p-6">
+      <div className="bg-image-overlay" />
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center glass border-b-0 rounded-b-2xl mx-4 mt-4">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
-          <Shield className="text-black w-8 h-8" />
-          <span className="text-xl font-display font-bold text-black">Fraudent</span>
+          <Shield className="text-white w-8 h-8" />
+          <span className="text-xl font-display font-bold text-white">Fraudent</span>
         </div>
       </nav>
 
@@ -95,24 +96,24 @@ function ProcessingContent() {
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-0 border-4 border-black/5 rounded-full"
+            className="absolute inset-0 border-4 border-white/5 rounded-full"
           />
           <motion.div
             animate={{ rotate: -360 }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-            className="absolute inset-2 border-4 border-black/10 border-t-black rounded-full"
+            className="absolute inset-2 border-4 border-white/10 border-t-white rounded-full"
           />
           <div className="absolute inset-0 flex items-center justify-center">
-            <Scan className="w-16 h-16 text-black animate-pulse" />
+            <Scan className="w-16 h-16 text-white animate-pulse" />
           </div>
         </div>
 
-        <h2 className="text-3xl font-display font-bold mb-4 text-black">Scanning...</h2>
-        <p className="text-black/60 mb-8 h-6">{statusText}</p>
+        <h2 className="text-3xl font-display font-bold mb-4 text-white">Scanning...</h2>
+        <p className="text-white/40 mb-8 h-6">{statusText}</p>
 
-        <div className="w-full bg-black/5 h-2 rounded-full overflow-hidden">
+        <div className="w-full bg-white/5 h-2 rounded-full overflow-hidden">
           <motion.div 
-            className="h-full bg-black"
+            className="h-full bg-white"
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
           />
@@ -125,8 +126,8 @@ function ProcessingContent() {
 export default function ProcessingPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-cream flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-black/10 border-t-black rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin" />
       </div>
     }>
       <ProcessingContent />

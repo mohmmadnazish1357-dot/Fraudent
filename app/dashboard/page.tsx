@@ -43,7 +43,7 @@ export default function Dashboard() {
       title: 'Profile Audit',
       desc: 'Analyze behavior patterns of any username.',
       icon: UserCheck,
-      color: 'from-black to-black/60',
+      color: 'from-white to-white/60',
       path: '/audit/profile'
     },
     {
@@ -51,7 +51,7 @@ export default function Dashboard() {
       title: 'Content Forensic',
       desc: 'Detect AI-generated images and deepfakes.',
       icon: ImageIcon,
-      color: 'from-black/80 to-black/40',
+      color: 'from-white/80 to-white/40',
       path: '/audit/content'
     },
     {
@@ -59,17 +59,18 @@ export default function Dashboard() {
       title: 'Profile Duel',
       desc: 'Compare two accounts to find the imposter.',
       icon: Users,
-      color: 'from-black/60 to-black/20',
+      color: 'from-white/60 to-white/20',
       path: '/audit/duel'
     }
   ];
 
   return (
-    <div className="min-h-screen bg-cream">
+    <div className="min-h-screen bg-[#0A0A0A]">
+      <div className="bg-image-overlay" />
       <nav className="fixed top-0 left-0 right-0 z-50 px-6 py-4 flex justify-between items-center glass border-b-0 rounded-b-2xl mx-4 mt-4">
         <div className="flex items-center gap-2 cursor-pointer" onClick={() => router.push('/')}>
-          <Shield className="text-black w-8 h-8" />
-          <span className="text-xl font-display font-bold text-black">Fraudent</span>
+          <Shield className="text-white w-8 h-8" />
+          <span className="text-xl font-display font-bold text-white">Fraudent</span>
         </div>
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-3 mr-4">
@@ -77,15 +78,15 @@ export default function Dashboard() {
               <img 
                 src={session.user.image} 
                 alt="Profile" 
-                className="w-8 h-8 rounded-full border border-black/10"
+                className="w-8 h-8 rounded-full border border-white/10"
                 referrerPolicy="no-referrer"
               />
             )}
-            <span className="text-sm font-bold text-black hidden sm:block">{session?.user?.name}</span>
+            <span className="text-sm font-bold text-white hidden sm:block">{session?.user?.name}</span>
           </div>
           <button 
             onClick={() => signOut()}
-            className="p-2 rounded-xl hover:bg-black/5 transition-colors text-black/60"
+            className="p-2 rounded-xl hover:bg-white/5 transition-colors text-white/40"
           >
             <LogOut size={20} />
           </button>
@@ -94,8 +95,8 @@ export default function Dashboard() {
 
       <div className="pt-32 pb-20 px-6 max-w-6xl mx-auto">
         <header className="mb-12">
-          <h2 className="text-3xl font-display font-bold mb-2 text-black">Detective Dashboard</h2>
-          <p className="text-black/60">Select a forensic tool to begin your investigation.</p>
+          <h2 className="text-3xl font-display font-bold mb-2 text-white">Detective Dashboard</h2>
+          <p className="text-white/40">Select a forensic tool to begin your investigation.</p>
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
@@ -109,13 +110,13 @@ export default function Dashboard() {
               className="group relative cursor-pointer"
             >
               <div className={`absolute inset-0 bg-gradient-to-br ${card.color} opacity-0 group-hover:opacity-10 blur-2xl transition-opacity rounded-[2rem]`} />
-              <div className="relative glass p-8 rounded-[2rem] h-full flex flex-col hover:border-black/10 transition-all">
-                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-6 shadow-lg`}>
-                  <card.icon className="text-white" size={28} />
+              <div className="relative glass p-8 rounded-[2.5rem] h-full flex flex-col hover:border-white/20 transition-all">
+                <div className={`w-14 h-14 rounded-2xl bg-white flex items-center justify-center mb-6 shadow-lg`}>
+                  <card.icon className="text-black" size={28} />
                 </div>
-                <h3 className="text-xl font-bold mb-2 text-black">{card.title}</h3>
-                <p className="text-black/60 text-sm leading-relaxed mb-6">{card.desc}</p>
-                <div className="mt-auto flex items-center text-black font-bold text-sm group-hover:gap-2 transition-all">
+                <h3 className="text-xl font-bold mb-2 text-white">{card.title}</h3>
+                <p className="text-white/40 text-sm leading-relaxed mb-6">{card.desc}</p>
+                <div className="mt-auto flex items-center text-white font-bold text-sm group-hover:gap-2 transition-all">
                   Start Audit <ChevronRight size={16} />
                 </div>
               </div>
@@ -126,35 +127,35 @@ export default function Dashboard() {
         {history.length > 0 && (
           <section>
             <div className="flex items-center gap-2 mb-6">
-              <History className="text-black/30" size={20} />
-              <h3 className="text-xl font-bold text-black">Recent Investigations</h3>
+              <History className="text-white/20" size={20} />
+              <h3 className="text-xl font-bold text-white">Recent Investigations</h3>
             </div>
             <div className="space-y-4">
               {history.slice(0, 5).map((item) => (
                 <div 
                   key={item.id} 
-                  className="glass p-4 rounded-2xl flex items-center justify-between hover:bg-cream/60 transition-colors cursor-pointer" 
+                  className="glass p-4 rounded-2xl flex items-center justify-between hover:bg-white/[0.05] transition-colors cursor-pointer" 
                   onClick={() => router.push(`/results/${item.id}`)}
                 >
                   <div className="flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-black/10 text-black">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 text-white">
                       {item.type === 'profile' ? <UserCheck size={20} /> :
                        item.type === 'content' ? <ImageIcon size={20} /> :
                        <Users size={20} />}
                     </div>
                     <div>
-                      <p className="font-bold text-black">{item.input}</p>
-                      <p className="text-xs text-black/40">{new Date(item.timestamp).toLocaleString()}</p>
+                      <p className="font-bold text-white">{item.input}</p>
+                      <p className="text-xs text-white/20">{new Date(item.timestamp).toLocaleString()}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="text-right mr-4">
-                      <p className="text-xs text-black/40 uppercase">Trust Score</p>
-                      <p className={`font-bold ${item.score > 70 ? 'text-green-600' : item.score > 40 ? 'text-yellow-600' : 'text-red-600'}`}>
+                      <p className="text-xs text-white/20 uppercase">Trust Score</p>
+                      <p className={`font-bold ${item.score > 70 ? 'text-green-500' : item.score > 40 ? 'text-yellow-500' : 'text-red-500'}`}>
                         {item.score}%
                       </p>
                     </div>
-                    <ChevronRight className="text-black/20" size={20} />
+                    <ChevronRight className="text-white/20" size={20} />
                   </div>
                 </div>
               ))}

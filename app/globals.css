@@ -3,27 +3,28 @@
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-space), ui-sans-serif, system-ui, sans-serif;
-  --color-cream: #FDF5E6;
-  --color-primary: #000000;
+  --color-cream: #0A0A0A;
+  --color-primary: #FFFFFF;
+  --color-accent: #00FF00;
 }
 
 @layer base {
   body {
-    @apply bg-cream text-black antialiased;
+    @apply bg-[#0A0A0A] text-white antialiased selection:bg-white selection:text-black;
   }
 }
 
 @layer components {
   .glass {
-    @apply bg-white/40 backdrop-blur-xl border border-white/20 shadow-xl;
+    @apply bg-white/[0.03] backdrop-blur-2xl border border-white/[0.08] shadow-2xl;
   }
   
   .ambient-bg {
-    @apply fixed inset-0 -z-10 bg-cream bg-cover bg-center bg-no-repeat transition-all duration-1000;
+    @apply fixed inset-0 -z-10 bg-[#0A0A0A] bg-cover bg-center bg-no-repeat transition-all duration-1000;
   }
   
   .bg-image-overlay {
-    @apply fixed inset-0 -z-10 bg-gradient-to-br from-cream/90 via-cream/80 to-cream/90;
+    @apply fixed inset-0 -z-10 bg-[radial-gradient(circle_at_50%_50%,_rgba(255,255,255,0.05)_0%,_transparent_100%)];
   }
 }
 
@@ -34,4 +35,15 @@
 
 .animate-float {
   animation: float 10s ease-in-out infinite;
+}
+
+.scan-line {
+  @apply absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent;
+  animation: scan 3s linear infinite;
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  50% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
 }

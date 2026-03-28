@@ -11,43 +11,44 @@ export default function Home() {
 
   if (status === "loading") {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream">
-        <div className="w-12 h-12 border-4 border-black/10 border-t-black rounded-full animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A]">
+        <div className="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin" />
       </div>
     );
   }
 
   if (session) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-cream">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#0A0A0A]">
+        <div className="bg-image-overlay" />
         <motion.div 
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full text-center relative"
         >
           <div className="mb-10">
-            <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/20">
-              <Shield className="text-white w-10 h-10" />
+            <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-white/10">
+              <Shield className="text-black w-10 h-10" />
             </div>
-            <h1 className="text-4xl font-display font-bold text-black tracking-tight mb-2">Fraudent</h1>
+            <h1 className="text-4xl font-display font-bold text-white tracking-tight mb-2">Fraudent</h1>
           </div>
 
-          <div className="glass rounded-[2rem] border-black/5 shadow-2xl p-10">
-            <h2 className="text-2xl font-display font-bold mb-4 text-black">Welcome Back</h2>
-            <p className="text-black/60 mb-8">
-              Logged in as <strong className="text-black">{session.user?.email}</strong>
+          <div className="glass rounded-[2.5rem] p-10">
+            <h2 className="text-2xl font-display font-bold mb-4 text-white">Welcome Back</h2>
+            <p className="text-white/40 mb-8">
+              Logged in as <strong className="text-white">{session.user?.email}</strong>
             </p>
             
             <div className="space-y-4">
               <button
                 onClick={() => router.push("/dashboard")}
-                className="w-full py-4 rounded-2xl bg-black text-white font-bold text-lg hover:bg-black/80 transition-all shadow-lg"
+                className="w-full py-4 rounded-2xl bg-white text-black font-bold text-lg hover:bg-white/90 transition-all shadow-lg"
               >
                 Go to Dashboard
               </button>
               <button
                 onClick={() => signOut()}
-                className="w-full py-4 rounded-2xl border-2 border-red-500 text-red-500 font-bold text-lg hover:bg-red-50 transition-all"
+                className="w-full py-4 rounded-2xl border border-white/10 text-white/60 font-bold text-lg hover:bg-white/5 transition-all"
               >
                 Logout
               </button>
@@ -59,29 +60,30 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-cream">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[#0A0A0A]">
+      <div className="bg-image-overlay" />
       <motion.div 
         initial={{ opacity: 0, scale: 0.98 }}
         animate={{ opacity: 1, scale: 1 }}
         className="max-w-md w-full text-center relative"
       >
         <div className="mb-10">
-          <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/20">
-            <Shield className="text-white w-10 h-10" />
+          <div className="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-white/10">
+            <Shield className="text-black w-10 h-10" />
           </div>
-          <h1 className="text-4xl font-display font-bold text-black tracking-tight mb-2">Fraudent</h1>
-          <p className="text-black/40 text-sm font-medium uppercase tracking-[0.2em]">Forensic Analysis Portal</p>
+          <h1 className="text-4xl font-display font-bold text-white tracking-tight mb-2">Fraudent</h1>
+          <p className="text-white/20 text-sm font-medium uppercase tracking-[0.2em]">Forensic Analysis Portal</p>
         </div>
 
-        <div className="glass rounded-[2rem] border-black/5 shadow-2xl p-10">
-          <h2 className="text-2xl font-display font-bold mb-4 text-black">Secure Access</h2>
-          <p className="text-black/60 mb-8">
+        <div className="glass rounded-[2.5rem] p-10">
+          <h2 className="text-2xl font-display font-bold mb-4 text-white">Secure Access</h2>
+          <p className="text-white/40 mb-8">
             Please sign in with your verified Google account to access the forensic tools.
           </p>
           
           <button
             onClick={() => signIn("google")}
-            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-black text-white font-bold text-lg hover:bg-black/80 transition-all shadow-lg"
+            className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-black font-bold text-lg hover:bg-white/90 transition-all shadow-lg"
           >
             <svg className="w-6 h-6" viewBox="0 0 24 24">
               <path
@@ -106,7 +108,7 @@ export default function Home() {
         </div>
       </motion.div>
       
-      <p className="mt-8 text-[10px] text-black/20 font-bold uppercase tracking-[0.3em]">
+      <p className="mt-8 text-[10px] text-white/20 font-bold uppercase tracking-[0.3em]">
         End-to-End Encrypted • AI-Powered Forensics
       </p>
     </div>
