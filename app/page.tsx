@@ -18,8 +18,44 @@ export default function Home() {
   }
 
   if (session) {
-    router.push("/dashboard");
-    return null;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-cream">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md w-full text-center relative"
+        >
+          <div className="mb-10">
+            <div className="w-20 h-20 bg-black rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/20">
+              <Shield className="text-white w-10 h-10" />
+            </div>
+            <h1 className="text-4xl font-display font-bold text-black tracking-tight mb-2">Fraudent</h1>
+          </div>
+
+          <div className="glass rounded-[2rem] border-black/5 shadow-2xl p-10">
+            <h2 className="text-2xl font-display font-bold mb-4 text-black">Welcome Back</h2>
+            <p className="text-black/60 mb-8">
+              Logged in as <strong className="text-black">{session.user?.email}</strong>
+            </p>
+            
+            <div className="space-y-4">
+              <button
+                onClick={() => router.push("/dashboard")}
+                className="w-full py-4 rounded-2xl bg-black text-white font-bold text-lg hover:bg-black/80 transition-all shadow-lg"
+              >
+                Go to Dashboard
+              </button>
+              <button
+                onClick={() => signOut()}
+                className="w-full py-4 rounded-2xl border-2 border-red-500 text-red-500 font-bold text-lg hover:bg-red-50 transition-all"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      </div>
+    );
   }
 
   return (
