@@ -294,7 +294,7 @@ const LoginPage = () => {
             {isLoading ? (
               <Loader2 className="animate-spin" />
             ) : (
-              isSignUp ? "Initialize Account" : "Access Portal"
+              isSignUp ? "Initialize Account" : "Login"
             )}
           </button>
           
