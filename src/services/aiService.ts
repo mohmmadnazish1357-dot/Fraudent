@@ -1,24 +1,9 @@
 import regression from 'regression';
+import { AuditResult } from '../types';
 
 /**
  * aiService.ts - The Detection Engine
  */
-
-export interface AuditResult {
-  id: string;
-  type: 'profile' | 'content' | 'duel';
-  input: string;
-  score: number;
-  evidence: string[];
-  details: {
-    original?: string;
-    imposter?: string;
-    isAI?: boolean;
-    isDuplicate?: boolean;
-    bothFake?: boolean;
-  };
-  timestamp: string;
-}
 
 // Your predefined database/profiles
 const PREDEFINED_PROFILES: Record<string, any> = {
@@ -61,6 +46,8 @@ const trainTrustModel = () => {
 
 const trustModel = trainTrustModel();
 
+const generateId = (prefix: string) => `${prefix}_${Math.random().toString(36).substr(2, 9)}`;
+
 /**
  * Logic-based ML Model for Profile Detection
  */
@@ -74,7 +61,7 @@ export const analyzeProfile = async (username: string): Promise<AuditResult> => 
   if (!profile) {
     // If user is not in database, we perform a "pattern check"
     return {
-      id: `audit_${Math.random().toString(36).substr(2, 9)}`,
+      id: generateId('audit'),
       type: 'profile',
       input: username,
       score: 50,
@@ -116,7 +103,7 @@ export const analyzeProfile = async (username: string): Promise<AuditResult> => 
   score = Math.max(0, Math.min(100, score));
 
   return {
-    id: `audit_${Math.random().toString(36).substr(2, 9)}`,
+    id: generateId('audit'),
     type: 'profile',
     input: username,
     score: Math.round(score),
@@ -137,7 +124,7 @@ export const analyzeContent = async (input: string): Promise<AuditResult> => {
   const score = isAI ? 20 : 95;
 
   return {
-    id: `content_${Date.now()}`,
+    id: generateId('content'),
     type: 'content',
     input: input,
     score: score,
@@ -188,7 +175,7 @@ export const analyzeDuel = async (user1: string, user2: string): Promise<AuditRe
   const imposter = res1.score < res2.score ? user1 : user2;
 
   return {
-    id: `duel_${Date.now()}`,
+    id: generateId('duel'),
     type: 'duel',
     input: `${user1} vs ${user2}`,
     score: bothFake ? Math.min(res1.score, res2.score) : Math.abs(res1.score - res2.score),
