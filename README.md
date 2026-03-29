@@ -4,7 +4,7 @@ Built with a high-stakes investigative aesthetic, the platform provides three co
 1.Profile Audit: Analyzes account health by calculating follower-to-following ratios, scanning for financial scam keywords (like "crypto" or "invest"), and identifying bot-like behavioral patterns.
 2.Content Forensic: Uses synthetic pattern recognition to determine if images or posts are AI-generated or authentic.
 3.Profile Duel: A specialized comparison engine that pits two accounts against each other to identify imposters. It detects stolen profile pictures and uses behavioral analysis to conclude which account is the authentic source.
-
+4.It uses Regression Model to analyze the profiles and classify them based on it's originality
 The app leverages a logic-based ML engine and a regression model to calculate "Trust Scores," helping users navigate the digital landscape with forensic precision.
 
 This app uses predefined profiles to check the user's profiles since we cant access any social media platform without their permission.
@@ -28,3 +28,5 @@ const KNOWN_AI_IMAGES = [
 'ai_model.png'
 
 APP LINK:https://fraudent.vercel.app/login
+
+
