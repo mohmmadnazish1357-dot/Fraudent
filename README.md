@@ -9,8 +9,7 @@ The app leverages a logic-based ML engine and a regression model to calculate "T
 5. It uses Firebase as both backend and database(Firestore) and uses languages such as HTML,TAILWIND CSS ,REACT as frontend.
 6.Firebase is used for user authentication too.
 7.The app is build manly using Google AI Studio as platform and I have used many AI tools for ideas and error fixing.
-
-
+8.I have used Google Console Cloud so that users can use their google accounts to login into the app
 
 This app uses predefined profiles to check the user's profiles since we cant access any social media platform without their permission.
 Few of the predefined profiles for checking are:
