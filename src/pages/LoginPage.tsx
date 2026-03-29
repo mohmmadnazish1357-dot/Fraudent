@@ -50,6 +50,13 @@ export const LoginPage: React.FC = () => {
       return;
     }
 
+    // Enforce 'password' as the app password
+    if (password !== 'password') {
+      setError("Access Denied: Invalid forensic key. The app password is 'password'.");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       if (isSignUp) {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -167,7 +174,7 @@ export const LoginPage: React.FC = () => {
           
           <div className="space-y-2">
             <div className="flex justify-between items-center ml-1">
-              <label className="text-[10px] font-bold text-black/40 uppercase tracking-widest">App Password</label>
+              <label className="text-[10px] font-bold text-black/40 uppercase tracking-widest">password</label>
               {!isSignUp && (
                 <button type="button" className="text-[9px] text-black/30 hover:text-black font-bold uppercase tracking-widest transition-colors">
                   Forgot?
@@ -180,7 +187,7 @@ export const LoginPage: React.FC = () => {
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="password"
                 className="w-full py-4 pl-12 pr-4 rounded-2xl bg-black/[0.02] border border-black/5 focus:border-black/20 focus:outline-none transition-all text-black font-medium"
                 required
               />
