@@ -6,6 +6,11 @@ Built with a high-stakes investigative aesthetic, the platform provides three co
 3.Profile Duel: A specialized comparison engine that pits two accounts against each other to identify imposters. It detects stolen profile pictures and uses behavioral analysis to conclude which account is the authentic source.
 4.It uses Regression Model to analyze the profiles and classify them based on it's originality
 The app leverages a logic-based ML engine and a regression model to calculate "Trust Scores," helping users navigate the digital landscape with forensic precision.
+5. It uses Firebase as both backend and database(Firestore) and uses languages such as HTML,TAILWIND CSS ,REACT as frontend.
+6.Firebase is used for user authentication too.
+7.The app is build manly using Google AI Studio as platform and I have used many AI tools for ideas and error fixing.
+
+
 
 This app uses predefined profiles to check the user's profiles since we cant access any social media platform without their permission.
 Few of the predefined profiles for checking are:
