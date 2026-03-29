@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'motion/react';
 import { Scan } from 'lucide-react';
+import { toast } from 'sonner';
 import { db, doc, setDoc } from '../firebase';
 import { analyzeProfile, analyzeContent, analyzeDuel } from '../services/aiService';
 import { User, AuditResult } from '../types';
@@ -69,8 +70,9 @@ export const ProcessingPage: React.FC<ProcessingPageProps> = ({ user }) => {
         }
 
         navigate(`/results/${result.id}`, { state: { result } });
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
+        toast.error(error.message || "Forensic analysis failed.");
         navigate('/');
       }
     };

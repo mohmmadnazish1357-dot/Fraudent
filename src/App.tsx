@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AnimatePresence } from 'motion/react';
+import { Toaster } from 'sonner';
 import { auth, onAuthStateChanged, signOut } from './firebase';
 import { generateBackgroundImage } from './services/aiService';
 import { User } from './types';
@@ -105,6 +106,7 @@ export default function App() {
     <Router>
       <div className="relative min-h-screen">
         <AmbientBackground imageUrl={bgImage} />
+        <Toaster position="top-center" richColors />
         <Navbar 
           user={user} 
           onLogout={handleLogout} 
