@@ -204,7 +204,7 @@ const LoginPage = () => {
             ) : (
               <img src="https://www.google.com/favicon.ico" className="w-5 h-5" alt="Google" />
             )}
-            {isGoogleLoading ? "Verifying..." : "Continue with Google"}
+            {isGoogleLoading ? "Verifying..." : "Login"}
           </button>
 
           <div className="flex items-center gap-4 py-2">
