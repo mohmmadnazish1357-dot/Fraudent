@@ -11,7 +11,7 @@ Built with a high-stakes investigative aesthetic, the platform provides three co
 The app leverages a logic-based ML engine and a regression model to calculate "Trust Scores," helping users navigate the digital landscape with forensic precision.
 
 5. It uses Firebase as both backend and database(Firestore) and uses languages such as HTML,TAILWIND CSS ,REACT as frontend.
-6. 
+
 6.Firebase is used for user authentication too.
 
 7.The app is build manly using Google AI Studio as platform and I have used many AI tools for ideas and error fixing.
