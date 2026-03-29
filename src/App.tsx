@@ -27,8 +27,22 @@ export default function App() {
   const [isReady, setIsReady] = useState(false);
   const [bgImage, setBgImage] = useState<string>('');
   const [appError, setAppError] = useState<Error | null>(null);
+  const [hasApiKey, setHasApiKey] = useState(true);
 
   useEffect(() => {
+    const checkApiKey = async () => {
+      const aiStudio = (window as any).aistudio;
+      if (aiStudio) {
+        const selected = await aiStudio.hasSelectedApiKey();
+        setHasApiKey(selected);
+      } else {
+        // Fallback for non-AI Studio environments (like Vercel)
+        const envKey = process.env.GEMINI_API_KEY || (import.meta as any).env.VITE_GEMINI_API_KEY;
+        setHasApiKey(!!envKey);
+      }
+    };
+    checkApiKey();
+
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       if (fbUser) {
         setUser({
@@ -62,6 +76,16 @@ export default function App() {
     }
   };
 
+  const handleSelectKey = async () => {
+    const aiStudio = (window as any).aistudio;
+    if (aiStudio) {
+      await aiStudio.openSelectKey();
+      setHasApiKey(true);
+    } else {
+      alert("Please set VITE_GEMINI_API_KEY in your environment variables.");
+    }
+  };
+
   if (!isReady) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-cream">
@@ -81,7 +105,12 @@ export default function App() {
     <Router>
       <div className="relative min-h-screen">
         <AmbientBackground imageUrl={bgImage} />
-        <Navbar user={user} onLogout={handleLogout} />
+        <Navbar 
+          user={user} 
+          onLogout={handleLogout} 
+          hasApiKey={hasApiKey} 
+          onSelectKey={handleSelectKey} 
+        />
         
         <main className="relative z-10">
           <AnimatePresence mode="wait">
